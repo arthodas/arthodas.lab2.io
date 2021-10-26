@@ -6,7 +6,7 @@ function start() {
     document.addEventListener("keydown", moveBear, false);
 
     //Added an event listener for the input of the speed of the bear
-    //document.getElementById("speedBear").addEventListener("change", setSpeed);
+    document.getElementById("speedBear").addEventListener("change", setSpeed,false);
 
     //create new array for bees
     bees = new Array();
@@ -19,6 +19,8 @@ function start() {
     //take start time
     lastStingTime = new Date();
 
+    
+
 }
 function Bear() {
     this.dBear = 100;
@@ -28,15 +30,16 @@ function Bear() {
     this.y = this.htmlElement.offsetTop;
     this.move = function(xDir, yDir) {
         this.fitBounds(); //we add this instruction to keep bear within board
-        this.x += this.dBear * xDir;
-        this.y += this.dBear * yDir;
+        this.x += this.dBear * xDir ;
+        this.y += this.dBear * yDir ;
         this.display();
         };
     this.display = function() {
-    this.htmlElement.style.left = this.x + "px";
-    this.htmlElement.style.top = this.y + "px";
-    this.htmlElement.style.display = "block";
-    };
+        this.fitBounds();
+        this.htmlElement.style.left = this.x + "px";
+        this.htmlElement.style.top = this.y + "px";
+        this.htmlElement.style.display = "block";
+        };
     this.fitBounds = function() {
         let parent = this.htmlElement.parentElement;
         let iw = this.htmlElement.offsetWidth;
@@ -48,17 +51,18 @@ function Bear() {
         if (this.x < 0) this.x = 0;
         if (this.x > w - iw) this.x = w - iw;
         if (this.y < 0) this.y = 0;
-        if (this.y > h - ih) this.y = h - ih;
+        if (this.y > h - ih) this.y = h - ih; 
         };
-    //----- TO DO -----
-    this.setSpeed = function() {
-        var speed = document.getElementById("");
-        speed.setAttribute("type","number");
-    };
+    
    }
+
+function setSpeed(){
+    bear.dBear = document.getElementById("speedBear").value
+}
 // Handle keyboad events
 // to move the bear
 function moveBear(e) {
+    firstmove = true;
     //codes of the four keys
     const KEYUP = 38;
     const KEYDOWN = 40;
@@ -200,18 +204,21 @@ function isHit(defender, offender) {
         let score = hits.innerHTML;
         score = Number(score) + 1; //increment the score
         hits.innerHTML = score; //display the new score
-        //calculate longest duration
-        let newStingTime = new Date();
-        let thisDuration = newStingTime - lastStingTime;
-        lastStingTime = newStingTime;
-        let longestDuration = Number(duration.innerHTML);
-        if (longestDuration === 0) {
-            longestDuration = thisDuration;
+        //calculate longest duration once bear moves
+        if (firstmove == true){
+            let newStingTime = new Date();
+            let thisDuration = newStingTime - lastStingTime;
+            lastStingTime = newStingTime;
+            let longestDuration = Number(duration.innerHTML);
+            if (longestDuration === 0) {
+                longestDuration = thisDuration;
+            }
+            else {
+                if (longestDuration < thisDuration) longestDuration = thisDuration;
+            }
+            document.getElementById("duration").innerHTML = longestDuration;
         }
-        else {
-            if (longestDuration < thisDuration) longestDuration = thisDuration;
-        }
-        document.getElementById("duration").innerHTML = longestDuration;
+        
     }
 }
 function overlap(element1, element2) {
@@ -235,5 +242,10 @@ function overlap(element1, element2) {
         return false;
     }
     return true;
+}
+
+//function to restart the game
+function restart(){
+    location.reload();
 }
    
